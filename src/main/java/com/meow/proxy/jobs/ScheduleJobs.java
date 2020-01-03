@@ -35,12 +35,19 @@ public class ScheduleJobs {
         TaskHolder taskHolder = TaskHolder.getInstance();
         List<Task> taskList = taskHolder.getTaskList();
         if (CollectionUtils.isNotEmpty(taskList)) {
-            LOG.info("Start to crawl valid proxy..");
-            List<Proxy> proxies = proxyCrawl.crawl(taskList);
-            if (CollectionUtils.isNotEmpty(proxies)) {
-                proxyService.saveProxies(proxies);
+            for (Task task : taskList) {
+                try {
+                    LOG.info("Start to crawl valid proxy..");
+                    List<Proxy> proxies = proxyCrawl.crawl(task);
+                    if (CollectionUtils.isNotEmpty(proxies)) {
+                        proxyService.saveProxies(proxies);
+                    }
+                    LOG.info("Save valid proxies success， proxies size: " + proxies.size());
+                } catch (Exception e) {
+                    LOG.error("爬代理失败", e);
+                }
             }
-            LOG.info("Save valid proxies success， proxies size: " + proxies.size());
+
         }
     }
 

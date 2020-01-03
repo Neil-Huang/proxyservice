@@ -18,7 +18,7 @@ public class ProxyRecheckSender implements ProxyRecheckCallBack {
     private final static Logger LOG = LoggerFactory.getLogger(ProxyRecheckSender.class);
 
     @Autowired
-    ProxyRecheckHandler proxyRecheckHandler;
+    private ProxyRecheckHandler proxyRecheckHandler;
 
     public void sendRecheckProxies(List<Proxy> proxyList){
         proxyRecheckHandler.handleMessage(this,proxyList);

@@ -19,7 +19,7 @@ import java.net.Socket;
  */
 public class ProxyCheck {
     private final static Logger LOG = LoggerFactory.getLogger(ProxyCheck.class);
-    private final static int CHECKPROXY_TIMEOUT = 30000;
+    private final static int CHECKPROXY_TIMEOUT = 10000;
     /**
      * 使用布隆过滤器进行去重
      */

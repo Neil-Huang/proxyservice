@@ -41,34 +41,38 @@ public class XicidailiExtractor implements Extractor {
                     long beginTime = System.currentTimeMillis();
                     Element ipEle = element.getElementsByClass("country").first().nextElementSibling();
                     if (ipEle != null) {
-                        Element portELe = ipEle.nextElementSibling();
-                        String ip = ipEle.text();
-                        int port = Integer.parseInt(portELe.text());
-                        boolean valid = proxyCheck.checkProxyBySocket(new HttpHost(ip, port), true);
-                        if (valid) {
-                            long end = System.currentTimeMillis();
-                            Element areaEle = portELe.nextElementSibling();
-                            Element anonymousEle = areaEle.nextElementSibling();
-                            Element protocolEle = anonymousEle.nextElementSibling();
+                        try {
+                            Element portELe = ipEle.nextElementSibling();
+                            String ip = ipEle.text();
+                            int port = Integer.parseInt(portELe.text());
+                            boolean valid = proxyCheck.checkProxyBySocket(new HttpHost(ip, port), true);
+                            if (valid) {
+                                long end = System.currentTimeMillis();
+                                Element areaEle = portELe.nextElementSibling();
+                                Element anonymousEle = areaEle.nextElementSibling();
+                                Element protocolEle = anonymousEle.nextElementSibling();
 
-                            Proxy proxy = new Proxy();
-                            proxy.setCountry(CountryType.china.getCountryName());
-                            proxy.setIp(ip);
-                            proxy.setPort(port);
-                            proxy.setArea(areaEle.text());
-                            proxy.setCheckStatus(1);
-                            proxy.setAnonymousType(getAnonymousType(anonymousEle));
-                            proxy.setProtocolType(protocolEle.text());
-                            proxy.setSourceSite(ProxySite.xicidaili.getProxySiteName());
-                            proxy.setCheckTime(beginTime);
-                            proxy.setCrawlTime(beginTime);
-                            proxy.setValidTime(1);
-                            proxy.setLastSurviveTime(-1L);
-                            proxy.setInvalidTime(-1L);
-                            proxy.setValid(true);
-                            proxy.setResponseTime(end - beginTime);
-                            LOG.info("Valid proxy:" + proxy.toString());
-                            proxies.add(proxy);
+                                Proxy proxy = new Proxy();
+                                proxy.setCountry(CountryType.china.getCountryName());
+                                proxy.setIp(ip);
+                                proxy.setPort(port);
+                                proxy.setArea(areaEle.text());
+                                proxy.setCheckStatus(1);
+                                proxy.setAnonymousType(getAnonymousType(anonymousEle));
+                                proxy.setProtocolType(protocolEle.text());
+                                proxy.setSourceSite(ProxySite.xicidaili.getProxySiteName());
+                                proxy.setCheckTime(beginTime);
+                                proxy.setCrawlTime(beginTime);
+                                proxy.setValidTime(1);
+                                proxy.setLastSurviveTime(-1L);
+                                proxy.setInvalidTime(-1L);
+                                proxy.setValid(true);
+                                proxy.setResponseTime(end - beginTime);
+                                LOG.info("Valid proxy:" + proxy.toString());
+                                proxies.add(proxy);
+                            }
+                        }catch (Exception e){
+                            LOG.error("XicidailiExtractor error",e);
                         }
                     } else {
                         LOG.error("XicidailiExtractor can not extract anything..., please check.");
@@ -84,7 +88,11 @@ public class XicidailiExtractor implements Extractor {
         List<Proxy> proxies = new ArrayList<Proxy>(200);
         if (CollectionUtils.isNotEmpty(htmlContentList)) {
             for (String htmlContent : htmlContentList) {
-                proxies.addAll(extract(htmlContent));
+                try {
+                    proxies.addAll(extract(htmlContent));
+                }catch (Exception e){
+                    LOG.error("解析XiciHtml错误",e);
+                }
             }
         }
         return proxies;
